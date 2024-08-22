@@ -253,7 +253,7 @@ spec:
             - name: "bundle"
               value: "quay.io/ch007m/tekton-bundle:latest@sha256:c019b61cf372bcb28515759ebac4b185eccf23290bb628c6050e4b279c4989b0"
             - name: "name"
-              value: "build-container"
+              value: "pack-builder"
             - name: "kind"
               value: "task"
           resolver: "bundles"
