@@ -119,7 +119,7 @@ spec:
         type: "array"
       - default: ""
         description: "Path to a file with build arguments for buildah, see https://www.mankier.com/1/buildah-build#--build-arg-file"
-        name: "build-args"
+        name: "build-args-file"
         type: "string"
       - default: "true"
         description: "A boolean indicating whether we would like to execute a step"
