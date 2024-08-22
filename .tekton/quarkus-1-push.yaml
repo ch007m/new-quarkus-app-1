@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -252,7 +252,7 @@ spec:
         taskRef:
           params:
             - name: "bundle"
-              value: "quay.io/ch007m/tekton-bundle:latest@sha256:b20dbe380d5b875a9df9a7e68b224ee8c0b74b36ada4332b2030c1cca4e03147"
+              value: "quay.io/ch007m/tekton-bundle:latest@sha256:bfcc8337a638b1d39ce3cdedc9a18927afe7cd5040299e72794659fef3a481ff"
             - name: "name"
               value: "pack-builder"
             - name: "kind"
