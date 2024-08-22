@@ -240,10 +240,6 @@ spec:
         value: "$(params.imageUrl)"
       - name: "PACK_CLI_IMAGE_VERSION"
         value: "$(params.imageTag)"
-      - name: "BUILDER_IMAGE_NAME"
-        value: "$(params.output-image)"
-      - name: "PACK_BUILDER_TOML"
-        value: "ubi-builder.toml"
       - name: "PACK_CMD_FLAGS"
         value:
         - "$(params.packCmdBuilderFlags)"
@@ -252,9 +248,9 @@ spec:
       taskRef:
         params:
         - name: "bundle"
-          value: "quay.io/ch007m/tekton-bundle:latest@sha256:2c7ab3819e6b78a3139b0a36a7f48ee2a64d78645e5e88d2412140a7a0b3ed53"
+          value: "quay.io/ch007m/tekton-bundle:latest@sha256:f772449d8436d8176ab53d53cbbbf0238522183f421449f52a4eb87e0bd34b66"
         - name: "name"
-          value: "pack-builder"
+          value: "pack"
         - name: "kind"
           value: "task"
         resolver: "bundles"
