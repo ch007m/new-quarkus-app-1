@@ -40,7 +40,6 @@ spec:
   - name: "packCmdBuilderFlags"
     value:
     - "-v"
-    - "--publish"
   - name: "build-image-index"
     value: ""
   pipelineSpec:
