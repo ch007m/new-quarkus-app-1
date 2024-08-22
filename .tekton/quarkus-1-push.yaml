@@ -252,7 +252,7 @@ spec:
       taskRef:
         params:
         - name: "bundle"
-          value: "quay.io/ch007m/tekton-bundle:latest@sha256:34eaf6ffe96836702f76a0817fe808b357069fa9a7a160403c55c9ec8c814205"
+          value: "quay.io/ch007m/tekton-bundle:latest@sha256:2c7ab3819e6b78a3139b0a36a7f48ee2a64d78645e5e88d2412140a7a0b3ed53"
         - name: "name"
           value: "pack-builder"
         - name: "kind"
