@@ -40,6 +40,12 @@ spec:
   - name: "packCmdBuilderFlags"
     value:
     - "-v"
+    - "build"
+    - "quarkus-hello:1.0"
+    - "--builder"
+    - "quay.io/snowdrop/ubi-builder"
+    - "--env"
+    - "BP_JVM_VERSION=21"
   - name: "build-image-index"
     value: ""
   pipelineSpec:
