@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.openshift.io/strategy: "build"
     pipelines.appstudio.openshift.io/type: "build"
+    pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -39,7 +39,8 @@ spec:
     value: "latest"
   - name: "packCmdBuilderFlags"
     value:
-    - "build quarkus-hello:1.0"
+    - "build"
+    - "quarkus-hello:1.0"
   - name: "build-image-index"
     value: ""
   pipelineSpec:
@@ -247,7 +248,7 @@ spec:
       taskRef:
         params:
         - name: "bundle"
-          value: "quay.io/ch007m/tekton-bundle:latest@sha256:81287aa159fbce51d66fd76adb4c823210c59650b6dcc70ca65d2eef21dc6897"
+          value: "quay.io/ch007m/tekton-bundle:latest@sha256:bc130944a4ee377846abd2ffe9add0c8ad1dff571089d4e0b590e0c446660ac4"
         - name: "name"
           value: "pack"
         - name: "kind"
