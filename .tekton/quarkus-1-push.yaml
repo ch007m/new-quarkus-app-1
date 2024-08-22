@@ -77,6 +77,9 @@ spec:
             - name: "kind"
               value: "task"
           resolver: "bundles"
+        workspaces:
+          - name: "workspace"
+            workspace: "workspace"
     params:
       - description: "Source Repository URL"
         name: "git-url"
@@ -227,8 +230,6 @@ spec:
         workspaces:
           - name: "source"
             workspace: "workspace"
-          - name: "netrc"
-            workspace: "netrc"
           - name: "git-basic-auth"
             workspace: "git-auth"
       - name: "build-container"
@@ -257,6 +258,10 @@ spec:
             - name: "kind"
               value: "task"
           resolver: "bundles"
+        workspaces:
+          - name: "source-dir"
+            subPath: ""
+            workspace: "workspace"
       - name: "build-image-index"
         params:
           - name: "IMAGE"
