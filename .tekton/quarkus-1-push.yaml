@@ -29,6 +29,8 @@ spec:
       value: "quay.io/ch007m/user-ns1/my-quarkus/quarkus-1:{{revision}}"
     - name: "path-context"
       value: "."
+    - name: "image-expires-after"
+      value: "5d"
     - name: "build-image-index"
       value: ""
   pipelineSpec:
@@ -113,8 +115,7 @@ spec:
         description: "Build a source image"
         name: "build-source-image"
         type: "string"
-      - default: []
-        description: "Array of --build-arg values (\"arg=value\" strings) for buildah"
+      - description: "Array of --build-arg values (\"arg=value\" strings) for buildah"
         name: "build-args"
         type: "array"
       - default: ""
