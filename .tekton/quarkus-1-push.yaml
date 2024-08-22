@@ -183,7 +183,7 @@ spec:
           - name: "url"
             value: "$(params.git-url)"
         runAfter:
-          - "git-clone"
+          - "init"
         taskRef:
           params:
             - name: "bundle"
