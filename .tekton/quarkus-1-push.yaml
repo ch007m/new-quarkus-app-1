@@ -39,8 +39,7 @@ spec:
     value: "latest"
   - name: "packCmdBuilderFlags"
     value:
-    - "build"
-    - "quarkus-hello:1.0"
+    - "build quarkus-hello:1.0"
   - name: "build-image-index"
     value: ""
   pipelineSpec:
