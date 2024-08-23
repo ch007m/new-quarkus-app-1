@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.openshift.io/strategy: "build"
     pipelines.appstudio.openshift.io/type: "build"
+    pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -183,7 +183,9 @@ spec:
         - description: "Digests of the base images used for build"
           name: "BASE_IMAGES_DIGESTS"
         steps:
-        - image: "registry.access.redhat.com/ubi9@sha256:1ee4d8c50d14d9c9e9229d9a039d793fcbc9aa803806d194c957a397cf1d2b17"
+        - args:
+          - "$(params.packCmdBuilderFlags)"
+          image: "registry.access.redhat.com/ubi9@sha256:1ee4d8c50d14d9c9e9229d9a039d793fcbc9aa803806d194c957a397cf1d2b17"
           name: "run-script"
           script: |
             #!/usr/bin/env bash
@@ -196,8 +198,16 @@ spec:
             echo "Checking pack ..."
             pack --version
 
+            # We cannot get the array from the params within the bash script as substitution don't work in this case
+            # ==> pack $(params.PACK_CMD_FLAGS[*])
+
+            echo "Getting the arguments ..."
+            for cmd_arg in "$@"; do
+              CLI_ARGS+=("arg=$cmd_arg")
+            done
+
             echo "Building the image ..."
-            pack $(params.PACK_CMD_FLAGS[*])
+            pack "${CLI_ARGS[@]}"
 
             echo -n "URL of the image build is : quarkus-hello:1.0" | tee "$(results.IMAGE_URL.path)"
             echo -n "sha256ddddddddddddddddddddd" | tee "$(results.IMAGE_DIGEST.path)"
