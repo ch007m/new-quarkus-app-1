@@ -198,9 +198,20 @@ spec:
             \ \\\"$(uname -m)\\\"\"\n      exit 1\n  esac\n}\n\noutputDir=\"/usr/local/bin/\"\
             \ncurl_args=(\n  \"--fail\"\n  \"--silent\"\n  \"--location\"\n  \"--output\"\
             \ \"${outputDir}/jam\"\n)\n\nos=$(util::tools::os)\narch=$(util::tools::arch)\n\
-            \necho \"Installing jam $(params.JAM_VERSION)\"\ncurl \"https://github.com/paketo-buildpacks/jam/releases/download/${version}/jam-${os}-${arch}\"\
+            \necho \"Installing jam $(params.JAM_VERSION)\"\ncurl \"https://github.com/paketo-buildpacks/jam/releases/download/$(params.JAM_VERSION)/jam-${os}-${arch}\"\
             \ \\\n  \"${curl_args[@]}\"\nchmod +x ${outputDir}/jam\njam version\n\n\
-            echo \"Installing pack ...\"\ncurl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
+            cat <<EOF > stack.toml\nid = \"io.buildpacks.stacks.ubi8\"\nhomepage =\
+            \ \"https://github.com/paketo-community/ubi-base-stack\"\nmaintainer =\
+            \ \"Paketo Community\"\n\nplatforms = [\"linux/amd64\"]\n\n[build]\n \
+            \ description = \"base build ubi8 image to support buildpacks\"\n  dockerfile\
+            \ = \"./build.Dockerfile\"\n  gid = 1000\n  shell = \"/bin/bash\"\n  uid\
+            \ = 1002\n\n  [build.args]\n\n[run]\n  description = \"base run ubi8 image\
+            \ to support buildpacks\"\n  dockerfile = \"./run.Dockerfile\"\n  gid\
+            \ = 1000\n  shell = \"/bin/bash\"\n  uid = 1001\n\n  [run.args]\nEOF\n\
+            \nstack_dirpath=\".\"\nargs=(\n  --config \"${stack_dirpath}/stack.toml\"\
+            \n  --build-output \"${build_dirpath}/build.oci\"\n  --run-output \"${build_dirpath}/run.oci\"\
+            \n)\njam create-stack \"${args[@]}\"\n\necho \"Installing pack ...\"\n\
+            curl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
             \ | tar -C /usr/local/bin/ --no-same-owner -xzv pack\n\necho \"Checking\
             \ pack ...\"\npack --version\n\n# We cannot get the array from the params\
             \ PACK_CMD_FLAGS within the bash script as substitution don't work in\
