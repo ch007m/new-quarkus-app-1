@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -183,10 +183,10 @@ spec:
           script: "#!/usr/bin/env bash\n\nset -e\n\necho \"Installing pack ...\"\n\
             curl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
             \ | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack\n\necho \"Checking\
-            \ pack ...\"\npack --version\n\necho -n \"BASE_IMAGES_DIGESTS\" | tee\
-            \ \"$(results.BASE_IMAGES_DIGESTS)\"\necho -n \"IMAGE_URL\" | tee \"$(results.IMAGE_URL.path)\"\
-            \        \necho -n \"IMAGE_DIGEST\" | tee \"$(results.IMAGE_DIGEST.path)\"\
-            \n"
+            \ pack ...\"\npack --version\n\n#echo -n \"BASE_IMAGES_DIGESTS\" | tee\
+            \ \"$(results.BASE_IMAGES_DIGESTS)\"\n#echo -n \"IMAGE_URL\" | tee \"\
+            $(results.IMAGE_URL.path)\"        \n#echo -n \"IMAGE_DIGEST\" | tee \"\
+            $(results.IMAGE_DIGEST.path)\"\n"
     - name: "build-image-index"
       params:
       - name: "IMAGE"
