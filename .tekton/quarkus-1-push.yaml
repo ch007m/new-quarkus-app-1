@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -169,6 +169,8 @@ spec:
         value: "$(params.source-dir)"
       - name: "PACK_CLI_VERSION"
         value: "v0.35.1"
+      - name: "JAM_VERSION"
+        value: "v2.7.3"
       runAfter:
       - "prefetch-dependencies"
       taskSpec:
@@ -184,33 +186,32 @@ spec:
           - "$(params.packCmdBuilderFlags)"
           image: "registry.access.redhat.com/ubi9@sha256:1ee4d8c50d14d9c9e9229d9a039d793fcbc9aa803806d194c957a397cf1d2b17"
           name: "run-script"
-          script: |
-            #!/usr/bin/env bash
-            set -e
-
-            echo "Installing pack ..."
-            curl -sSL "https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz" | tar -C /usr/local/bin/ --no-same-owner -xzv pack
-
-            echo "Checking pack ..."
-            pack --version
-
-            # We cannot get the array from the params PACK_CMD_FLAGS within the bash script as substitution don't work in this case !!
-
-            echo "Getting the arguments ..."
-            for cmd_arg in "$@"; do
-              CLI_ARGS+=("$cmd_arg")
-            done
-
-            for i in "${CLI_ARGS[@]}"; do
-              echo "arg: $i"
-            done
-
-            echo "Building the image ..."
-            pack "${CLI_ARGS[@]}"
-
-            echo -n "URL of the image build is : quarkus-hello:1.0" | tee "$(results.IMAGE_URL.path)"
-            echo -n "sha256ddddddddddddddddddddd" | tee "$(results.IMAGE_DIGEST.path)"
-            echo -n "sha256eeeeeeeeeeeeeeeeeeeeee" | tee "$(results.BASE_IMAGES_DIGESTS.path)"
+          script: "#!/usr/bin/env bash\nset -e\n\nfunction util::tools::os() {\n \
+            \ case \"$(uname)\" in\n  \"Darwin\")\n  echo \"${1:-darwin}\"\n  ;;\n\
+            \  \n  \"Linux\")\n  echo \"linux\"\n  ;;\n  \n  *)\n  util::print::error\
+            \ \"Unknown OS \\\"$(uname)\\\"\"\n  exit 1\n  esac\n}\n\nfunction util::tools::arch()\
+            \ {\n  case \"$(uname -m)\" in\n    arm64|aarch64)\n      echo \"arm64\"\
+            \n      ;;\n\n    amd64|x86_64)\n      if [[ \"${1:-}\" == \"--blank-amd64\"\
+            \ ]]; then\n        echo \"\"\n      elif [[ \"${1:-}\" == \"--uname-format-amd64\"\
+            \ ]]; then\n        echo \"x86_64\"\n      else\n        echo \"amd64\"\
+            \n      fi\n      ;;\n\n    *)\n      util::print::error \"Unknown Architecture\
+            \ \\\"$(uname -m)\\\"\"\n      exit 1\n  esac\n}\n\noutputDir=\"/usr/local/bin/\"\
+            \ncurl_args=(\n  \"--fail\"\n  \"--silent\"\n  \"--location\"\n  \"--output\"\
+            \ \"${outputDir}/jam\"\n)\n\nos=$(util::tools::os)\narch=$(util::tools::arch)\n\
+            \necho \"Installing jam $(params.JAM_VERSION)\"\ncurl \"https://github.com/paketo-buildpacks/jam/releases/download/${version}/jam-${os}-${arch}\"\
+            \ \\\n  \"${curl_args[@]}\"\nchmod +x ${outputDir}/jam\njam version\n\n\
+            echo \"Installing pack ...\"\ncurl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
+            \ | tar -C /usr/local/bin/ --no-same-owner -xzv pack\n\necho \"Checking\
+            \ pack ...\"\npack --version\n\n# We cannot get the array from the params\
+            \ PACK_CMD_FLAGS within the bash script as substitution don't work in\
+            \ this case !!\n\necho \"Getting the arguments ...\"\nfor cmd_arg in \"\
+            $@\"; do\n  CLI_ARGS+=(\"$cmd_arg\")\ndone\n\necho \"Here are the arguments\
+            \ to be passed to the pack CLI\"\nfor i in \"$CLI_ARGS[@]\"; do\n  echo\
+            \ \"arg: $i\"\ndone\n\necho \"Building the image ...\"\npack \"${CLI_ARGS[@]}\"\
+            \n\necho -n \"URL of the image build is : quarkus-hello:1.0\" | tee \"\
+            $(results.IMAGE_URL.path)\"\necho -n \"sha256ddddddddddddddddddddd\" |\
+            \ tee \"$(results.IMAGE_DIGEST.path)\"\necho -n \"sha256eeeeeeeeeeeeeeeeeeeeee\"\
+            \ | tee \"$(results.BASE_IMAGES_DIGESTS.path)\"\n"
     - name: "build-image-index"
       params:
       - name: "IMAGE"
