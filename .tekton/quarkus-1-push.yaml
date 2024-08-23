@@ -163,33 +163,27 @@ spec:
         workspace: "workspace"
       - name: "git-basic-auth"
         workspace: "git-auth"
-    - name: "build-container"
+    - name: "pack"
       params:
       - name: "PACK_SOURCE_DIR"
         value: "$(params.source-dir)"
-      - name: "PACK_CLI_IMAGE"
-        value: "$(params.imageUrl)"
-      - name: "PACK_CLI_IMAGE_VERSION"
-        value: "$(params.imageTag)"
+      - name: "PACK_CLI_VERSION"
+        value: "v0.35.1"
       - name: "PACK_CMD_FLAGS"
         value:
         - "$(params.packCmdBuilderFlags)"
       runAfter:
       - "prefetch-dependencies"
-      taskRef:
-        params:
-        - name: "bundle"
-          value: "quay.io/ch007m/tekton-bundle:latest@sha256:bc130944a4ee377846abd2ffe9add0c8ad1dff571089d4e0b590e0c446660ac4"
-        - name: "name"
-          value: "pack"
-        - name: "kind"
-          value: "task"
-        resolver: "bundles"
-      workspaces:
-      - name: "source-dir"
-        workspace: "workspace"
-      - name: "pack-workspace"
-        workspace: "workspace"
+      taskSpec:
+        steps:
+        - image: "centos"
+          name: "run-script"
+          script: |
+            echo "Installing pack ..."
+            curl -sSL "https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
+
+            echo "Checking pack ..."
+            pack --version
     - name: "build-image-index"
       params:
       - name: "IMAGE"
