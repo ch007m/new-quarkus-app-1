@@ -163,7 +163,7 @@ spec:
         workspace: "workspace"
       - name: "git-basic-auth"
         workspace: "git-auth"
-    - name: "pack"
+    - name: "build-container"
       params:
       - name: "PACK_SOURCE_DIR"
         value: "$(params.source-dir)"
