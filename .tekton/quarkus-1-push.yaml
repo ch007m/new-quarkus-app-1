@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.openshift.io/strategy: "build"
     pipelines.appstudio.openshift.io/type: "build"
+    pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -177,6 +177,13 @@ spec:
       runAfter:
       - "prefetch-dependencies"
       taskSpec:
+        results:
+        - description: "Image repository where the built image was pushed"
+          name: "IMAGE_URL"
+        - description: "Digest of the image just built"
+          name: "IMAGE_DIGEST"
+        - description: "Digests of the base images used for build"
+          name: "BASE_IMAGES_DIGESTS"
         steps:
         - image: "centos"
           name: "run-script"
