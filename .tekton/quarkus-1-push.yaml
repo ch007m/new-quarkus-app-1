@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -29,6 +29,8 @@ spec:
     value: "5d"
   - name: "build-image-index"
     value: ""
+  - name: "build-source-image"
+    value: "false"
   - name: "source-dir"
     value: "source"
   - name: "imageUrl"
