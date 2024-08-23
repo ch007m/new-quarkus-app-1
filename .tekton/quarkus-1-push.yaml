@@ -196,6 +196,9 @@ spec:
             echo "Checking pack ..."
             pack --version
 
+            eho "Building the image ..."
+            pack $(params.PACK_CMD_FLAGS[*])
+
             echo -n "URL of the image build is : quarkus-hello:1.0" | tee "$(results.IMAGE_URL.path)"
             echo -n "sha256ddddddddddddddddddddd" | tee "$(results.IMAGE_DIGEST.path)"
             echo -n "sha256eeeeeeeeeeeeeeeeeeeeee" | tee "$(results.BASE_IMAGES_DIGESTS.path)"
