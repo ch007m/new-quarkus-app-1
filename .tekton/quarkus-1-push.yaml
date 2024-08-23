@@ -31,6 +31,8 @@ spec:
     value: ""
   - name: "build-source-image"
     value: "false"
+  - name: "prefetch-input"
+    value: ""
   - name: "source-dir"
     value: "source"
   - name: "imageUrl"
