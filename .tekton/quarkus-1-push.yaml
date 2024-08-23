@@ -184,9 +184,9 @@ spec:
             curl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
             \ | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack\n\necho \"Checking\
             \ pack ...\"\npack --version\n\n#echo -n \"BASE_IMAGES_DIGESTS\" | tee\
-            \ \"$(results.BASE_IMAGES_DIGESTS)\"\n#echo -n \"IMAGE_URL\" | tee \"\
-            $(results.IMAGE_URL.path)\"        \n#echo -n \"IMAGE_DIGEST\" | tee \"\
-            $(results.IMAGE_DIGEST.path)\"\n"
+            \ \"$(results.BASE_IMAGES_DIGESTS.path)\"\n#echo -n \"IMAGE_URL\" | tee\
+            \ \"$(results.IMAGE_URL.path)\"        \n#echo -n \"IMAGE_DIGEST\" | tee\
+            \ \"$(results.IMAGE_DIGEST.path)\"\n"
     - name: "build-image-index"
       params:
       - name: "IMAGE"
