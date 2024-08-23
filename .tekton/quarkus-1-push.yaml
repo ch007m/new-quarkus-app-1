@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -23,8 +23,6 @@ spec:
     value: "{{source_url}}"
   - name: "revision"
     value: "{{revision}}"
-  - name: "dockerfile"
-    value: "src/main/docker/Dockerfile.jvm"
   - name: "output-image"
     value: "quay.io/ch007m/user-ns1/my-quarkus/quarkus-1:{{revision}}"
   - name: "path-context"
