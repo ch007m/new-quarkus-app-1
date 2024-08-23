@@ -201,7 +201,7 @@ spec:
               CLI_ARGS+=("$cmd_arg")
             done
 
-            for i in "$CLI_ARGS[@]"; do
+            for i in "${CLI_ARGS[@]}"; do
               echo "arg: $i"
             done
 
