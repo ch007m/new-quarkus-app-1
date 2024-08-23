@@ -91,8 +91,6 @@ spec:
       value: "$(tasks.build-container.results.IMAGE_DIGEST)"
     - name: "BASE_IMAGES_DIGESTS"
       value: "$(tasks.build-container.results.BASE_IMAGES_DIGESTS)"
-    - name: "JAVA_COMMUNITY_DEPENDENCIES"
-      value: "$(tasks.build-container.results.JAVA_COMMUNITY_DEPENDENCIES)"
     - name: "CHAINS-GIT_URL"
       value: "$(tasks.clone-repository.results.url)"
     - name: "CHAINS-GIT_COMMIT"
