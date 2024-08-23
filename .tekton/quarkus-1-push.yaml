@@ -185,7 +185,6 @@ spec:
         steps:
         - args:
           - "$(params.packCmdBuilderFlags)"
-          - null
           image: "registry.access.redhat.com/ubi9@sha256:1ee4d8c50d14d9c9e9229d9a039d793fcbc9aa803806d194c957a397cf1d2b17"
           name: "run-script"
           script: |
@@ -202,7 +201,7 @@ spec:
 
             echo "Getting the arguments ..."
             for cmd_arg in "$@"; do
-              CLI_ARGS+=("arg=$cmd_arg")
+              CLI_ARGS+=("$cmd_arg ")
             done
 
             echo "Building the image ..."
