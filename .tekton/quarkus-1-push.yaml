@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -169,9 +169,6 @@ spec:
         value: "$(params.source-dir)"
       - name: "PACK_CLI_VERSION"
         value: "v0.35.1"
-      - name: "PACK_CMD_FLAGS"
-        value:
-        - "$(params.packCmdBuilderFlags)"
       runAfter:
       - "prefetch-dependencies"
       taskSpec:
@@ -201,7 +198,11 @@ spec:
 
             echo "Getting the arguments ..."
             for cmd_arg in "$@"; do
-              CLI_ARGS+=("$cmd_arg ")
+              CLI_ARGS+=("$cmd_arg")
+            done
+
+            for i in CLI_ARGS[@]; do
+              echo "arg: $i"
             done
 
             echo "Building the image ..."
