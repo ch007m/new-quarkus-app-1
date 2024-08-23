@@ -191,7 +191,7 @@ spec:
             set -e
 
             echo "Installing pack ..."
-            curl -sSL "https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
+            curl -sSL "https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz" | tar -C /usr/local/bin/ --no-same-owner -xzv pack
 
             echo "Checking pack ..."
             pack --version
