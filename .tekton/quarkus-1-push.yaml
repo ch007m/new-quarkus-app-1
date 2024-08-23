@@ -185,11 +185,11 @@ spec:
         steps:
         - args:
           - "$(params.packCmdBuilderFlags)"
+          - null
           image: "registry.access.redhat.com/ubi9@sha256:1ee4d8c50d14d9c9e9229d9a039d793fcbc9aa803806d194c957a397cf1d2b17"
           name: "run-script"
           script: |
             #!/usr/bin/env bash
-
             set -e
 
             echo "Installing pack ..."
@@ -198,8 +198,7 @@ spec:
             echo "Checking pack ..."
             pack --version
 
-            # We cannot get the array from the params within the bash script as substitution don't work in this case
-            # ==> pack $(params.PACK_CMD_FLAGS[*])
+            # We cannot get the array from the params PACK_CMD_FLAGS within the bash script as substitution don't work in this case !!
 
             echo "Getting the arguments ..."
             for cmd_arg in "$@"; do
