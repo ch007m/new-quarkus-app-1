@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.openshift.io/strategy: "build"
     pipelines.appstudio.openshift.io/type: "build"
+    pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -89,6 +89,8 @@ spec:
       value: "$(tasks.build-container.results.IMAGE_URL)"
     - name: "IMAGE_DIGEST"
       value: "$(tasks.build-container.results.IMAGE_DIGEST)"
+    - name: "BASE_IMAGES_DIGESTS"
+      value: "$(tasks.build-container.results.BASE_IMAGES_DIGESTS)"
     - name: "JAVA_COMMUNITY_DEPENDENCIES"
       value: "$(tasks.build-container.results.JAVA_COMMUNITY_DEPENDENCIES)"
     - name: "CHAINS-GIT_URL"
@@ -178,7 +180,8 @@ spec:
         steps:
         - image: "centos"
           name: "run-script"
-          script: "echo \"Installing pack ...\"\ncurl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
+          script: "#!/usr/bin/env bash\n\nset -e\n\necho \"Installing pack ...\"\n\
+            curl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
             \ | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack\n\necho \"Checking\
             \ pack ...\"\npack --version\n\necho -n \"BASE_IMAGES_DIGESTS\" | tee\
             \ \"$(results.BASE_IMAGES_DIGESTS)\"\necho -n \"IMAGE_URL\" | tee \"$(results.IMAGE_URL.path)\"\
