@@ -9,12 +9,12 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
-    appstudio.openshift.io/component: "quarkus-app-1"
-    appstudio.openshift.io/application: "quarkus-projects"
+    appstudio.openshift.io/component: "quarkus-1-on-push"
+    appstudio.openshift.io/application: "quarkus-1-on-push"
   name: "quarkus-1-on-push"
   namespace: "user-ns1"
 spec:
@@ -147,7 +147,7 @@ spec:
       taskRef:
         params:
         - name: "bundle"
-          value: "quay.io/konflux-ci/tekton-catalog/task-prefetch-dependencies:0.1@sha256:d56ee97a3801f13c363d98bd5fe775b19a29a227e39d5214e9092598c6f881a1"
+          value: "quay.io/konflux-ci/tekton-catalog/task-prefetch-dependencies:0.1@sha256:058a59f72997c9cf1be20978eb6a145d8d4d436c6098f2460bd96766bb363b20"
         - name: "name"
           value: "prefetch-dependencies"
         - name: "kind"
@@ -165,10 +165,6 @@ spec:
         workspace: "git-auth"
     - name: "build-container"
       params:
-      - name: "PACK_SOURCE_DIR"
-        value: "$(params.source-dir)"
-      - name: "PACK_CLI_VERSION"
-        value: "v0.35.1"
       - name: "JAM_VERSION"
         value: "v2.7.3"
       runAfter:
@@ -212,19 +208,11 @@ spec:
             EOF\n\ncat <<EOF > ${stack_dirpath}/run.Dockerfile\nFROM registry.access.redhat.com/ubi8/ubi-minimal:latest\n\
             EOF\n\nargs=(\n  --config \"${stack_dirpath}/stack.toml\"\n  --build-output\
             \ \"${build_dirpath}/build.oci\"\n  --run-output \"${build_dirpath}/run.oci\"\
-            \n)\njam create-stack \"${args[@]}\"\n\necho \"Installing pack ...\"\n\
-            curl -sSL \"https://github.com/buildpacks/pack/releases/download/$(params.PACK_CLI_VERSION)/pack-$(params.PACK_CLI_VERSION)-linux.tgz\"\
-            \ | tar -C /usr/local/bin/ --no-same-owner -xzv pack\n\necho \"Checking\
-            \ pack ...\"\npack --version\n\n# We cannot get the array from the params\
-            \ PACK_CMD_FLAGS within the bash script as substitution don't work in\
-            \ this case !!\n\necho \"Getting the arguments ...\"\nfor cmd_arg in \"\
-            $@\"; do\n  CLI_ARGS+=(\"$cmd_arg\")\ndone\n\necho \"Here are the arguments\
-            \ to be passed to the pack CLI\"\nfor i in \"$CLI_ARGS[@]\"; do\n  echo\
-            \ \"arg: $i\"\ndone\n\necho \"Building the image ...\"\npack \"${CLI_ARGS[@]}\"\
-            \n\necho -n \"URL of the image build is : quarkus-hello:1.0\" | tee \"\
-            $(results.IMAGE_URL.path)\"\necho -n \"sha256ddddddddddddddddddddd\" |\
-            \ tee \"$(results.IMAGE_DIGEST.path)\"\necho -n \"sha256eeeeeeeeeeeeeeeeeeeeee\"\
-            \ | tee \"$(results.BASE_IMAGES_DIGESTS.path)\"\n"
+            \n)\njam create-stack \"${args[@]}\"\n        \necho -n \"URL of the image\
+            \ build is : quarkus-hello:1.0\" | tee \"$(results.IMAGE_URL.path)\"\n\
+            echo -n \"sha256ddddddddddddddddddddd\" | tee \"$(results.IMAGE_DIGEST.path)\"\
+            \necho -n \"sha256eeeeeeeeeeeeeeeeeeeeee\" | tee \"$(results.BASE_IMAGES_DIGESTS.path)\"\
+            \n"
     - name: "build-image-index"
       params:
       - name: "IMAGE"
@@ -243,7 +231,7 @@ spec:
       taskRef:
         params:
         - name: "bundle"
-          value: "quay.io/konflux-ci/tekton-catalog/task-build-image-index:0.1@sha256:a0ac2ef2107c8d117febbe076c884ef12e0276b0942a47c3906f5f25d128073e"
+          value: "quay.io/konflux-ci/tekton-catalog/task-build-image-index:0.1@sha256:409ff39379c50d3c257229b4c6d6600e35eb53637504c47fb36ade262c70716e"
         - name: "name"
           value: "build-image-index"
         - name: "kind"
@@ -359,7 +347,7 @@ spec:
       taskRef:
         params:
         - name: "bundle"
-          value: "quay.io/konflux-ci/tekton-catalog/task-sast-snyk-check:0.1@sha256:82c42d27c9c59db6cf6c235e89f7b37f5cdfc75d0d361ca0ee91ae703ba72301"
+          value: "quay.io/konflux-ci/tekton-catalog/task-sast-snyk-check:0.2@sha256:82c42d27c9c59db6cf6c235e89f7b37f5cdfc75d0d361ca0ee91ae703ba72301"
         - name: "name"
           value: "sast-snyk-check"
         - name: "kind"
