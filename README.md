@@ -1,4 +1,4 @@
-# my-quarkus-app - test 03
+# my-quarkus-app - test 04
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
