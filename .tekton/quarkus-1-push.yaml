@@ -13,8 +13,8 @@ metadata:
     pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
-    appstudio.openshift.io/application: "my-quarkus"
-    appstudio.openshift.io/component: "quarkus-1"
+    appstudio.openshift.io/component: "quarkus-app-1"
+    appstudio.openshift.io/application: "quarkus-projects"
   name: "quarkus-1-on-push"
   namespace: "user-ns1"
 spec:
@@ -62,7 +62,7 @@ spec:
         - name: "kind"
           value: "task"
         resolver: "bundles"
-    - name: "show-summary"
+    - name: "summary"
       params:
       - name: "pipelinerun-name"
         value: "$(context.pipelineRun.name)"
