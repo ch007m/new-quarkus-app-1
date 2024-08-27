@@ -143,8 +143,6 @@ spec:
           value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-phases/01/buildpacks-phases.yaml"
         - name: "revision"
           value: "main"
-        - name: "pathInRepo"
-          value: "./"
         resolver: "git"
       workspaces:
       - name: "source"
