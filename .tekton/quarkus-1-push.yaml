@@ -29,6 +29,8 @@ spec:
     value: "5d"
   - name: "build-image-index"
     value: ""
+  - name: "skip-checks"
+    value: "false"
   - name: "build-source-image"
     value: "false"
   - name: "prefetch-input"
