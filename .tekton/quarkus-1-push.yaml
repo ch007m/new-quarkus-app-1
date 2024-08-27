@@ -24,7 +24,7 @@ spec:
   - name: "revision"
     value: "{{revision}}"
   - name: "output-image"
-    value: "quay.io/ch007m/user-ns1/my-quarkus/quarkus-1:{{revision}}"
+    value: "quay.io/ch007m/my-quarkus:{{revision}}"
   - name: "image-expires-after"
     value: "5d"
   - name: "build-image-index"
