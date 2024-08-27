@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1
+apiVersion: "tekton.dev/v1"
 kind: "PipelineRun"
 metadata:
   annotations:
@@ -34,6 +34,42 @@ spec:
   - name: "prefetch-input"
     value: ""
   pipelineSpec:
+    finally:
+    - name: "show-sbom"
+      params:
+      - name: "IMAGE_URL"
+        value: "$(tasks.build-container.results.IMAGE_URL)"
+      taskRef:
+        params:
+        - name: "bundle"
+          value: "quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:9bfc6b99ef038800fe131d7b45ff3cd4da3a415dd536f7c657b3527b01c4a13b"
+        - name: "name"
+          value: "show-sbom"
+        - name: "kind"
+          value: "task"
+        resolver: "bundles"
+    - name: "summary"
+      params:
+      - name: "pipelinerun-name"
+        value: "$(context.pipelineRun.name)"
+      - name: "git-url"
+        value: "$(tasks.clone-repository.results.url)?rev=$(tasks.clone-repository.results.commit)"
+      - name: "image-url"
+        value: "$(params.output-image)"
+      - name: "build-task-status"
+        value: "$(tasks.build-container.status)"
+      taskRef:
+        params:
+        - name: "bundle"
+          value: "quay.io/konflux-ci/tekton-catalog/task-summary:0.2@sha256:d97c04ab42f277b1103eb6f3a053b247849f4f5b3237ea302a8ecada3b24e15b"
+        - name: "name"
+          value: "summary"
+        - name: "kind"
+          value: "task"
+        resolver: "bundles"
+      workspaces:
+      - name: "workspace"
+        workspace: "workspace"
     results:
     - name: "IMAGE_URL"
       value: "$(tasks.build-container.results.IMAGE_URL)"
@@ -161,38 +197,38 @@ spec:
       workspaces:
       - name: "source"
         workspace: "workspace"
-#   - name: "build-image-index"
-#     params:
-#     - name: "IMAGE"
-#       value: "$(params.output-image)"
-#     - name: "COMMIT_SHA"
-#       value: "$(tasks.clone-repository.results.commit)"
-#     - name: "IMAGE_EXPIRES_AFTER"
-#       value: "$(params.image-expires-after)"
-#     - name: "ALWAYS_BUILD_INDEX"
-#       value: "$(params.build-image-index)"
-#     - name: "IMAGES"
-#       value:
-#       - "$(tasks.build-container.results.IMAGE_URL)@$(tasks.build-container.results.IMAGE_DIGEST)"
-#     runAfter:
-#     - "build-container"
-#     taskRef:
-#       params:
-#       - name: "bundle"
-#         value: "quay.io/konflux-ci/tekton-catalog/task-build-image-index:0.1@sha256:409ff39379c50d3c257229b4c6d6600e35eb53637504c47fb36ade262c70716e"
-#       - name: "name"
-#         value: "build-image-index"
-#       - name: "kind"
-#         value: "task"
-#       resolver: "bundles"
-#     when:
-#     - input: "$(tasks.init.results.build)"
-#       operator: "in"
-#       values:
-#       - "true"
-#     workspaces:
-#     - name: "workspace"
-#       workspace: "workspace"
+    - name: "build-image-index"
+      params:
+      - name: "IMAGE"
+        value: "$(params.output-image)"
+      - name: "COMMIT_SHA"
+        value: "$(tasks.clone-repository.results.commit)"
+      - name: "IMAGE_EXPIRES_AFTER"
+        value: "$(params.image-expires-after)"
+      - name: "ALWAYS_BUILD_INDEX"
+        value: "$(params.build-image-index)"
+      - name: "IMAGES"
+        value:
+        - "$(tasks.build-container.results.IMAGE_URL)@$(tasks.build-container.results.IMAGE_DIGEST)"
+      runAfter:
+      - "build-container"
+      taskRef:
+        params:
+        - name: "bundle"
+          value: "quay.io/konflux-ci/tekton-catalog/task-build-image-index:0.1@sha256:409ff39379c50d3c257229b4c6d6600e35eb53637504c47fb36ade262c70716e"
+        - name: "name"
+          value: "build-image-index"
+        - name: "kind"
+          value: "task"
+        resolver: "bundles"
+      when:
+      - input: "$(tasks.init.results.build)"
+        operator: "in"
+        values:
+        - "true"
+      workspaces:
+      - name: "workspace"
+        workspace: "workspace"
     - name: "build-source-image"
       params:
       - name: "BINARY_IMAGE"
