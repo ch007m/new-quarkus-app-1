@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.openshift.io/strategy: "build"
     pipelines.appstudio.openshift.io/type: "build"
+    pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -113,6 +113,17 @@ spec:
         workspace: "workspace"
       - name: "git-basic-auth"
         workspace: "git-auth"
+    - name: "buildpacks-extension-check"
+      params:
+      - name: "builderImage"
+        value: "$(params.cnbBuilderImage)"
+      runAfter:
+      - "clone-repository"
+      taskRef:
+        params:
+        - name: "url"
+          value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml"
+        resolver: "http"
     - name: "build-container"
       params:
       - name: "APP_IMAGE"
@@ -133,10 +144,6 @@ spec:
         value: "paketocommunity/build-ubi-base:latest"
       - name: "CNB_RUN_IMAGE"
         value: "paketocommunity/run-ubi-base:latest"
-      - name: "CNB_GROUP_ID"
-        value: "1000"
-      - name: "CNB_USER_ID"
-        value: "1002"
       - name: "CNB_ENV_VARS"
         value:
         - "BP_JVM_VERSION=21"
@@ -145,7 +152,7 @@ spec:
       taskRef:
         params:
         - name: "url"
-          value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-phases/01/buildpacks-phases.yaml"
+          value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-extension-phases/01/buildpacks-extension-phases.yaml"
         resolver: "http"
       workspaces:
       - name: "source"
