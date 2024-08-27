@@ -144,6 +144,10 @@ spec:
         value: "paketocommunity/build-ubi-base:latest"
       - name: "CNB_RUN_IMAGE"
         value: "paketocommunity/run-ubi-base:latest"
+      - name: "CNB_USER_ID"
+        value: $(tasks.buildpacks-extension-check.results.uid)
+      - name: "CNB_GROUP_ID"
+        value: $(tasks.buildpacks-extension-check.results.gid)
       - name: "CNB_ENV_VARS"
         value:
         - "BP_JVM_VERSION=21"
