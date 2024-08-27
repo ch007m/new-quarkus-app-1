@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1
+apiVersion: "tekton.dev/v1"
 kind: "PipelineRun"
 metadata:
   annotations:
@@ -118,7 +118,7 @@ spec:
       - name: "APP_IMAGE"
         value: "$(params.output-image)"
       - name: "SOURCE_SUBPATH"
-        value: "."
+        value: "source"
       - name: "CNB_LOG_LEVEL"
         value: "info"
       - name: "CNB_BUILDER_IMAGE"
