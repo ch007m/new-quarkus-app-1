@@ -140,7 +140,7 @@ spec:
       taskRef:
         params:
         - name: "url"
-          value: "https://https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-phases/01/buildpacks-phases.yaml"
+          value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-phases/01/buildpacks-phases.yaml"
         resolver: "http"
       workspaces:
       - name: "source"
