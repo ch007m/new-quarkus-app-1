@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1
+apiVersion: "tekton.dev/v1"
 kind: "PipelineRun"
 metadata:
   annotations:
@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -68,7 +68,7 @@ spec:
       - name: "url"
         value: "$(params.git-url)"
       runAfter:
-      - "buildpacks-extension-check"
+      - "init"
       taskRef:
         params:
         - name: "bundle"
@@ -117,14 +117,16 @@ spec:
       params:
       - name: "builderImage"
         value: "paketocommunity/builder-ubi-base:latest"
+      - name: "credentialsHome"
+        value: "/tekton/creds-secrets/"
       runAfter:
-      - "init"
+      - "prefetch-dependencies"
       taskRef:
         params:
         - name: "url"
           value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml"
         resolver: "http"
-    - name: "build-container"
+    - name: "buildpacks-extension-phases"
       params:
       - name: "APP_IMAGE"
         value: "$(params.output-image)"
@@ -145,9 +147,9 @@ spec:
       - name: "CNB_RUN_IMAGE"
         value: "paketocommunity/run-ubi-base:latest"
       - name: "CNB_USER_ID"
-        value: $(tasks.buildpacks-extension-check.results.uid)
+        value: "$(tasks.buildpacks-extension-check.results.uid)"
       - name: "CNB_GROUP_ID"
-        value: $(tasks.buildpacks-extension-check.results.gid)
+        value: "$(tasks.buildpacks-extension-check.results.gid)"
       - name: "CNB_ENV_VARS"
         value:
         - "BP_JVM_VERSION=21"
