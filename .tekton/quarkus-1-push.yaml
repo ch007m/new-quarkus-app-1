@@ -118,7 +118,7 @@ spec:
       - name: "builderImage"
         value: "paketocommunity/builder-ubi-base:latest"
       runAfter:
-      - "clone-repository"
+      - "init"
       taskRef:
         params:
         - name: "url"
