@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/strategy: "build"
+    pipelines.appstudio.openshift.io/type: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -125,6 +125,8 @@ spec:
         value: "paketocommunity/builder-ubi-base:latest"
       - name: "CNB_LIFECYCLE_IMAGE"
         value: "buildpacksio/lifecycle:0.20.1"
+      - name: "CNB_PLATFORM_API"
+        value: "0.14"
       - name: "CNB_EXPERIMENTAL_MODE"
         value: "true"
       - name: "CNB_BUILD_IMAGE"
