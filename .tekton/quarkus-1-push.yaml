@@ -116,7 +116,7 @@ spec:
     - name: "buildpacks-extension-check"
       params:
       - name: "builderImage"
-        value: "$(params.cnbBuilderImage)"
+        value: "paketocommunity/builder-ubi-base:latest"
       runAfter:
       - "clone-repository"
       taskRef:
