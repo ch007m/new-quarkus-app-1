@@ -128,7 +128,7 @@ spec:
       - name: "CNB_PLATFORM_API"
         value: "0.14"
       - name: "CNB_EXPERIMENTAL_MODE"
-        value: "true"
+        value: "false"
       - name: "CNB_BUILD_IMAGE"
         value: "paketocommunity/build-ubi-base:latest"
       - name: "CNB_RUN_IMAGE"
