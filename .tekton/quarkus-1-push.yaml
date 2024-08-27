@@ -35,6 +35,8 @@ spec:
     value: "false"
   - name: "prefetch-input"
     value: ""
+  - name: "grype-version"
+    value: "v0.79.6"
   - name: "grype-sbom-format"
     value: "table"
   pipelineSpec:
@@ -42,7 +44,7 @@ spec:
     - name: "show-sbom"
       params:
       - name: "GRYPE_IMAGE"
-        value: "anchore/grype:v0.65.1"
+        value: "anchore/grype:$(params.grype-version)"
       - name: "ARGS"
         value:
         - "$(tasks.build-container.results.IMAGE_URL)"
