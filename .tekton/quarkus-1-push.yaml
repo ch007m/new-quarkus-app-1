@@ -163,7 +163,7 @@ spec:
         workspace: "workspace"
       - name: "git-basic-auth"
         workspace: "git-auth"
-    - name: "jam"
+    - name: "build-container"
       params:
       - name: "JAM_VERSION"
         value: "v2.7.3"
