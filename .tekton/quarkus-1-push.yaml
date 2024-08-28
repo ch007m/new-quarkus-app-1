@@ -9,8 +9,8 @@ metadata:
     build.appstudio.redhat.com/commit_sha: "{{revision}}"
     build.appstudio.redhat.com/target_branch: "{{target_branch}}"
   labels:
-    pipelines.openshift.io/strategy: "build"
     pipelines.appstudio.openshift.io/type: "build"
+    pipelines.openshift.io/strategy: "build"
     pipelines.openshift.io/used-by: "build-cloud"
     pipelines.openshift.io/runtime: "java"
     appstudio.openshift.io/application: "my-quarkus"
@@ -24,44 +24,36 @@ spec:
   - name: "revision"
     value: "{{revision}}"
   - name: "output-image"
-    value: "quay.io/ch007m/user-ns1/my-quarkus/quarkus-1:{{revision}}"
+    value: "quay.io/ch007m/my-quarkus:{{revision}}"
   - name: "image-expires-after"
     value: "5d"
   - name: "build-image-index"
     value: ""
+  - name: "skip-checks"
+    value: "true"
   - name: "build-source-image"
     value: "false"
   - name: "prefetch-input"
     value: ""
-  - name: "source-dir"
-    value: "source"
-  - name: "imageUrl"
-    value: "buildpacksio/pack"
-  - name: "imageTag"
-    value: "latest"
-  - name: "packCmdBuilderFlags"
-    value:
-    - "build"
-    - "-B"
-    - "quay.io/snowdrop/ubi-builder"
-    - "-e"
-    - "BP_JVM_VERSION=21"
-    - "quarkus-hello:1.0"
+  - name: "grype-version"
+    value: "v0.79.6"
+  - name: "grype-sbom-format"
+    value: "table"
   pipelineSpec:
     finally:
     - name: "show-sbom"
       params:
-      - name: "IMAGE_URL"
-        value: "$(tasks.build-container.results.IMAGE_URL)"
+      - name: "GRYPE_IMAGE"
+        value: "anchore/grype:$(params.grype-version)"
+      - name: "ARGS"
+        value:
+        - "$(tasks.build-container.results.IMAGE_URL)"
+        - "-o $(params.grype-sbom-format)"
       taskRef:
         params:
-        - name: "bundle"
-          value: "quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:9bfc6b99ef038800fe131d7b45ff3cd4da3a415dd536f7c657b3527b01c4a13b"
-        - name: "name"
-          value: "show-sbom"
-        - name: "kind"
-          value: "task"
-        resolver: "bundles"
+        - name: "url"
+          value: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/grype/0.1/grype.yaml"
+        resolver: "http"
     - name: "summary"
       params:
       - name: "pipelinerun-name"
@@ -163,56 +155,54 @@ spec:
         workspace: "workspace"
       - name: "git-basic-auth"
         workspace: "git-auth"
-    - name: "build-container"
+    - name: "buildpacks-extension-check"
       params:
-      - name: "JAM_VERSION"
-        value: "v2.7.3"
+      - name: "builderImage"
+        value: "paketocommunity/builder-ubi-base:latest"
+      - name: "credentialsHome"
+        value: "/tekton/creds-secrets/"
       runAfter:
       - "prefetch-dependencies"
-      taskSpec:
-        results:
-        - description: "Image repository where the built image was pushed"
-          name: "IMAGE_URL"
-        - description: "Digest of the image just built"
-          name: "IMAGE_DIGEST"
-        - description: "Digests of the base images used for build"
-          name: "BASE_IMAGES_DIGESTS"
-        steps:
-        - args:
-          - "$(params.packCmdBuilderFlags)"
-          image: "registry.access.redhat.com/ubi9@sha256:1ee4d8c50d14d9c9e9229d9a039d793fcbc9aa803806d194c957a397cf1d2b17"
-          name: "run-script"
-          script: "#!/usr/bin/env bash\nset -e\n\nfunction util::tools::os() {\n \
-            \ case \"$(uname)\" in\n  \"Darwin\")\n  echo \"${1:-darwin}\"\n  ;;\n\
-            \  \n  \"Linux\")\n  echo \"linux\"\n  ;;\n  \n  *)\n  util::print::error\
-            \ \"Unknown OS \\\"$(uname)\\\"\"\n  exit 1\n  esac\n}\n\nfunction util::tools::arch()\
-            \ {\n  case \"$(uname -m)\" in\n    arm64|aarch64)\n      echo \"arm64\"\
-            \n      ;;\n\n    amd64|x86_64)\n      if [[ \"${1:-}\" == \"--blank-amd64\"\
-            \ ]]; then\n        echo \"\"\n      elif [[ \"${1:-}\" == \"--uname-format-amd64\"\
-            \ ]]; then\n        echo \"x86_64\"\n      else\n        echo \"amd64\"\
-            \n      fi\n      ;;\n\n    *)\n      util::print::error \"Unknown Architecture\
-            \ \\\"$(uname -m)\\\"\"\n      exit 1\n  esac\n}\n\noutputDir=\"/usr/local/bin/\"\
-            \ncurl_args=(\n  \"--fail\"\n  \"--silent\"\n  \"--location\"\n  \"--output\"\
-            \ \"${outputDir}/jam\"\n)\n\nos=$(util::tools::os)\narch=$(util::tools::arch)\n\
-            \necho \"Installing jam $(params.JAM_VERSION)\"\ncurl \"https://github.com/paketo-buildpacks/jam/releases/download/$(params.JAM_VERSION)/jam-${os}-${arch}\"\
-            \ \\\n  \"${curl_args[@]}\"\nchmod +x ${outputDir}/jam\njam version\n\n\
-            echo \"This is a test demo - 1\"\n\nstack_dirpath=\".\"\ncat <<EOF > ${stack_dirpath}/stack.toml\n\
-            id = \"io.buildpacks.stacks.ubi8\"\nhomepage = \"https://github.com/paketo-community/ubi-base-stack\"\
-            \nmaintainer = \"Paketo Community\"\n\nplatforms = [\"linux/amd64\"]\n\
-            \n[build]\n  description = \"base build ubi8 image to support buildpacks\"\
-            \n  dockerfile = \"./build.Dockerfile\"\n  gid = 1000\n  shell = \"/bin/bash\"\
-            \n  uid = 1002\n\n  [build.args]\n\n[run]\n  description = \"base run\
-            \ ubi8 image to support buildpacks\"\n  dockerfile = \"./run.Dockerfile\"\
-            \n  gid = 1000\n  shell = \"/bin/bash\"\n  uid = 1001\n\n  [run.args]\n\
-            EOF\n\ncat <<EOF > ${stack_dirpath}/build.Dockerfile\nFROM registry.access.redhat.com/ubi8/ubi-minimal:latest\n\
-            EOF\n\ncat <<EOF > ${stack_dirpath}/run.Dockerfile\nFROM registry.access.redhat.com/ubi8/ubi-minimal:latest\n\
-            EOF\n\nargs=(\n  --config \"${stack_dirpath}/stack.toml\"\n  --build-output\
-            \ \"${build_dirpath}/build.oci\"\n  --run-output \"${build_dirpath}/run.oci\"\
-            \n)\njam create-stack \"${args[@]}\"\n        \necho -n \"URL of the image\
-            \ build is : quarkus-hello:1.0\" | tee \"$(results.IMAGE_URL.path)\"\n\
-            echo -n \"sha256ddddddddddddddddddddd\" | tee \"$(results.IMAGE_DIGEST.path)\"\
-            \necho -n \"sha256eeeeeeeeeeeeeeeeeeeeee\" | tee \"$(results.BASE_IMAGES_DIGESTS.path)\"\
-            \n"
+      taskRef:
+        params:
+        - name: "url"
+          value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-extension-check/01/buildpacks-extension-check.yaml"
+        resolver: "http"
+    - name: "build-container"
+      params:
+      - name: "APP_IMAGE"
+        value: "$(params.output-image)"
+      - name: "SOURCE_SUBPATH"
+        value: "source"
+      - name: "CNB_LOG_LEVEL"
+        value: "info"
+      - name: "CNB_LIFECYCLE_IMAGE"
+        value: "buildpacksio/lifecycle:0.20.1"
+      - name: "CNB_PLATFORM_API"
+        value: "0.14"
+      - name: "CNB_BUILDER_IMAGE"
+        value: "paketocommunity/builder-ubi-base:latest"
+      - name: "CNB_BUILD_IMAGE"
+        value: "paketocommunity/build-ubi-base:latest"
+      - name: "CNB_RUN_IMAGE"
+        value: "paketocommunity/run-ubi-base:latest"
+      - name: "CNB_USER_ID"
+        value: "$(tasks.buildpacks-extension-check.results.uid)"
+      - name: "CNB_GROUP_ID"
+        value: "$(tasks.buildpacks-extension-check.results.gid)"
+      - name: "CNB_ENV_VARS"
+        value:
+        - "BP_JVM_VERSION=21"
+      runAfter:
+      - "prefetch-dependencies"
+      taskRef:
+        params:
+        - name: "url"
+          value: "https://raw.githubusercontent.com/redhat-buildpacks/catalog/main/tekton/task/buildpacks-extension-phases/01/buildpacks-extension-phases.yaml"
+        resolver: "http"
+      workspaces:
+      - name: "source"
+        workspace: "workspace"
     - name: "build-source-image"
       params:
       - name: "BINARY_IMAGE"
